@@ -34,14 +34,6 @@
 static bool is_sorted (struct list_elem *a, struct list_elem *b,
                        list_less_func *less, void *aux) UNUSED;
 
-void
-list_get(struct list_elem *elem) {
-
-  elem->prev->next = elem->next;
-  elem->next->prev = elem->prev;
-
-}
-
 /* Returns true if ELEM is a head, false otherwise. */
 static inline bool
 is_head (struct list_elem *elem)
@@ -537,4 +529,13 @@ list_min (struct list *list, list_less_func *less, void *aux)
           min = e; 
     }
   return min;
+}
+
+void
+list_get(struct list_elem *elem) {
+
+  ASSERT (is_interior(elem));	
+  elem->prev->next = elem->next;
+  elem->next->prev = elem->prev;
+
 }

@@ -71,6 +71,7 @@ static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
+void thread_sleep(int64_t);
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can not work in
@@ -90,12 +91,17 @@ void
 thread_sleep(int64_t ticks) {
 
 	enum intr_level old_level = intr_disable();
-	struct thread *t = thread_current();
+	struct thread *t;
+	t = thread_current();
 
-	list_get(&(t->elem));
 	list_push_front(&wait_list, &(t->elem));
+	
 	t->start = 0;
 	t->end = ticks;
+	
+	t->status = THREAD_BLOCKED;
+
+	schedule();	
 	intr_set_level(old_level);
 
 }
@@ -107,8 +113,8 @@ thread_init (void)
 
   lock_init (&tid_lock);
   list_init (&ready_list);
-  list_init (&wait_list);
   list_init (&all_list);
+  list_init (&wait_list);
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -142,6 +148,8 @@ thread_start (void)
 void
 thread_tick (void) 
 {
+	
+	ASSERT(intr_get_level() == INTR_OFF);
 	struct thread *t = thread_current ();
 
 	/* Update statistics. */
@@ -154,8 +162,9 @@ thread_tick (void)
 	else
 		kernel_ticks++;
 
-	ASSERT(intr_get_level() == INTR_OFF);
 	struct list_elem *p;
+	struct list_elem *p_temp;
+
 	for(p = list_begin(&wait_list) ; p != list_end(&wait_list); p = list_next(p)) {
 
 		t = list_entry(p, struct thread, elem);
@@ -163,13 +172,12 @@ thread_tick (void)
 
 		if(t->start == t->end)
 		{
+			p_temp = list_prev(p);			
 			list_get(p);
 			list_push_back(&ready_list, p);
+			t->status = THREAD_RUNNING;
+			p = p_temp;
 		}
-
-
-		list_get(p);
-		list_push_back(&ready_list, p);
 	}
 
 
