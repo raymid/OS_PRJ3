@@ -89,19 +89,26 @@ void thread_sleep(int64_t);
 
 void
 thread_sleep(int64_t ticks) {
-
+	/* Disable interruptions */
 	enum intr_level old_level = intr_disable();
+	/* create a new thread and set it to current */
 	struct thread *t;
 	t = thread_current();
 
+	/* Push the current thread in the front of waiting queue. */
 	list_push_front(&wait_list, &(t->elem));
 	
+	/* Set the start and end of each threads to 0 and ticks respectively*/
 	t->start = 0;
 	t->end = ticks;
 	
+	/* Block the current thread */
 	t->status = THREAD_BLOCKED;
 
+	/* call the scheduler */
 	schedule();	
+
+	/* unblock the current threads */
 	intr_set_level(old_level);
 
 }
@@ -166,7 +173,7 @@ thread_tick (void)
 	struct list_elem *p_temp;
 
 	for(p = list_begin(&wait_list) ; p != list_end(&wait_list); p = list_next(p)) {
-
+		/* list_elem *p 를 가지고 있는 thread 구조체를 t 에 넣음. */
 		t = list_entry(p, struct thread, elem);
 		t->start++;
 

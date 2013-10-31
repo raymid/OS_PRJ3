@@ -531,6 +531,11 @@ list_min (struct list *list, list_less_func *less, void *aux)
   return min;
 }
 
+/* Our implementation
+ * It removes a elem from a list.
+ * This is used to remove a elem from the wait_list,
+ * to push it to the run_list. */
+
 void
 list_get(struct list_elem *elem) {
 
