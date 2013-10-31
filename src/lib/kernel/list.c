@@ -1,6 +1,8 @@
 #include "list.h"
 #include "../debug.h"
 
+
+
 /* Our doubly linked lists have two header elements: the "head"
    just before the first element and the "tail" just after the
    last element.  The `prev' link of the front header is null, as
@@ -531,16 +533,17 @@ list_min (struct list *list, list_less_func *less, void *aux)
   return min;
 }
 
-/* Our implementation
- * It removes a elem from a list.
- * This is used to remove a elem from the wait_list,
- * to push it to the run_list. */
+
+//////////////////////////////////
 
 void
-list_get(struct list_elem *elem) {
-
-  ASSERT (is_interior(elem));	
+list_get (struct list_elem *elem)
+{
+  ASSERT (is_interior (elem));
   elem->prev->next = elem->next;
   elem->next->prev = elem->prev;
-
 }
+
+
+/////////////////////////////////
+

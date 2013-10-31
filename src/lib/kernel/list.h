@@ -100,7 +100,14 @@ struct list
     struct list_elem tail;      /* List tail. */
   };
 
+/////////////////////
 void list_get (struct list_elem *);
+
+//////////////////
+
+
+
+
 
 /* Converts pointer to list element LIST_ELEM into a pointer to
    the structure that LIST_ELEM is embedded inside.  Supply the
@@ -136,6 +143,7 @@ void list_push_back (struct list *, struct list_elem *);
 struct list_elem *list_remove (struct list_elem *);
 struct list_elem *list_pop_front (struct list *);
 struct list_elem *list_pop_back (struct list *);
+
 
 /* List elements. */
 struct list_elem *list_front (struct list *);
